@@ -1,7 +1,5 @@
 # Greasemonkey Userscripts Collection
 
-Professional, concise overview of the userscripts and helper files in this folder.
-
 ## Project Overview
 
 This folder contains a small collection of Greasemonkey/Tampermonkey userscripts, configuration values, and helper/require files intended to improve media playback and site appearance across sites such as YouTube, Vimeo, Twitch, and general websites. The scripts include RTL progress bar support, a DarkReader variant, YouTube-specific helpers, and small fixes for site behavior.
