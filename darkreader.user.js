@@ -5754,3 +5754,77 @@ var inversionFixes = [{
   };
   apply(true, topURL, isIFrame, defaultTheme);
 })();
+
+// Lightweight enforcement: prefer dark, set common theme flags, and inject fallback CSS
+(function(){
+    'use strict';
+    try{
+        // Make CSS media queries asking for dark return true
+        const origMatch = window.matchMedia.bind(window);
+        window.matchMedia = function(query){
+            try{
+                if (typeof query === 'string' && query.indexOf('prefers-color-scheme') !== -1){
+                    return {
+                        matches: true,
+                        media: query,
+                        onchange: null,
+                        addListener: function(){},
+                        removeListener: function(){},
+                        addEventListener: function(){},
+                        removeEventListener: function(){},
+                        dispatchEvent: function(){ return false; }
+                    };
+                }
+            }catch(e){}
+            return origMatch(query);
+        };
+    }catch(e){}
+
+    try{
+        // Heuristic localStorage/sessionStorage keys many sites use for theme
+        const keys = {
+            theme: 'dark', Theme: 'dark', ui_theme: 'dark', color_scheme: 'dark', 'color-scheme': 'dark',
+            mode: 'dark', MODE: 'dark', night: '1', dark: '1', isDark: 'true', current_theme: 'dark', theme_mode: 'dark'
+        };
+        Object.keys(keys).forEach(k=>{
+            try{ localStorage.setItem(k, keys[k]); }catch(e){}
+            try{ sessionStorage.setItem(k, keys[k]); }catch(e){}
+        });
+    }catch(e){}
+
+    try{ document.cookie = 'theme=dark; path=/; max-age=31536000'; }catch(e){}
+
+    try{
+        document.documentElement.setAttribute('data-theme','dark');
+        document.documentElement.classList.add('dark','night');
+        if (document.body) document.body.classList.add('dark','night');
+    }catch(e){}
+
+    try{
+        const css = `
+            :root { color-scheme: dark !important; }
+            html, body { background: #0b0b0b !important; color: #e6e6e6 !important; }
+            body, body * { background-color: transparent !important; }
+            img, picture, video, svg, iframe { filter: none !important; background: transparent !important; }
+            a, p, span, div, header, section, main, article { color: #e6e6e6 !important; }
+            input, textarea, select, button { background-color: #111 !important; color: #e6e6e6 !important; border-color: rgba(255,255,255,0.06) !important; }
+            * { box-shadow: none !important; }
+        `;
+        const st = document.createElement('style');
+        st.setAttribute('data-darkreader-enforce','1');
+        st.textContent = css;
+        (document.head || document.documentElement).appendChild(st);
+    }catch(e){}
+
+    try{
+        let meta = document.querySelector('meta[name="color-scheme"]');
+        if (!meta){
+            meta = document.createElement('meta');
+            meta.name = 'color-scheme';
+            meta.content = 'dark';
+            document.head && document.head.appendChild(meta);
+        } else {
+            meta.content = 'dark';
+        }
+    }catch(e){}
+})();
