@@ -58,6 +58,3 @@ This folder contains a small collection of Greasemonkey/Tampermonkey userscripts
 ## Contact / Feedback
 
 Open an issue in this repository with: site URL, browser and userscript manager, and a short description of what fails (include screenshots/devtools console logs if available).
-
----
-_This README was generated to summarize the scripts and explain installation, configuration and troubleshooting steps._
