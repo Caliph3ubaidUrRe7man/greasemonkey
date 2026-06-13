@@ -27,16 +27,32 @@
         }
     }
 
-    // Observe page mutations to hide newly-added Shorts content
+    // Remove or hide Related Videos section below the video player
+    function hideRelatedVideos(root = document) {
+        try {
+            // hide the secondary results container (Related Videos)
+            root.querySelectorAll('ytd-watch-next-secondary-results-renderer').forEach(el => {
+                if (el && el.style) el.style.display = 'none';
+            });
+        } catch (e) {
+            // swallow DOM errors silently
+        }
+    }
+
+    // Observe page mutations to hide newly-added Shorts content and Related Videos
     const observer = new MutationObserver(mutations => {
         for (const m of mutations) {
             for (const node of m.addedNodes) {
-                if (node.nodeType === 1) hideShorts(node);
+                if (node.nodeType === 1) {
+                    hideShorts(node);
+                    hideRelatedVideos(node);
+                }
             }
         }
     });
 
     hideShorts(document);
+    hideRelatedVideos(document);
     observer.observe(document.documentElement || document, { childList: true, subtree: true });
 
     // Redirect direct /shorts/ URLs to the equivalent watch?v= link
