@@ -39,13 +39,43 @@
         }
     }
 
-    // Observe page mutations to hide newly-added Shorts content and Related Videos
+    // Hide recommendations from home page
+    function hideHomePageRecommendations(root = document) {
+        try {
+            // hide recommendation shelves and grids
+            root.querySelectorAll('ytd-rich-shelf-renderer, ytd-rich-grid-renderer').forEach(el => {
+                if (el && el.style) el.style.display = 'none';
+            });
+            // hide individual recommendation items
+            root.querySelectorAll('ytd-rich-item-renderer').forEach(el => {
+                if (el && el.style) el.style.display = 'none';
+            });
+        } catch (e) {
+            // swallow DOM errors silently
+        }
+    }
+
+    // Hide recommended videos in fullscreen overlay/endscreen
+    function hideFullscreenRecommendations(root = document) {
+        try {
+            // hide fullscreen endscreen and overlay recommendations
+            root.querySelectorAll('ytd-compact-autoplay-preview-renderer, ytd-player-endscreen-container, .ytp-endscreen-container').forEach(el => {
+                if (el && el.style) el.style.display = 'none';
+            });
+        } catch (e) {
+            // swallow DOM errors silently
+        }
+    }
+
+    // Observe page mutations to hide newly-added Shorts content, Related Videos, Home page recommendations, and Fullscreen recommendations
     const observer = new MutationObserver(mutations => {
         for (const m of mutations) {
             for (const node of m.addedNodes) {
                 if (node.nodeType === 1) {
                     hideShorts(node);
                     hideRelatedVideos(node);
+                    hideHomePageRecommendations(node);
+                    hideFullscreenRecommendations(node);
                 }
             }
         }
@@ -53,6 +83,8 @@
 
     hideShorts(document);
     hideRelatedVideos(document);
+    hideHomePageRecommendations(document);
+    hideFullscreenRecommendations(document);
     observer.observe(document.documentElement || document, { childList: true, subtree: true });
 
     // Redirect direct /shorts/ URLs to the equivalent watch?v= link
